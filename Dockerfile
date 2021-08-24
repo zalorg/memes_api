@@ -1,10 +1,10 @@
 FROM node:16
 WORKDIR /app
 
-COPY package*.json .
+COPY package*.json ./
 RUN npm install
 
-COPY . .
+COPY ./ ./
 RUN npm run build
 
 ENV HOST=0.0.0.0
