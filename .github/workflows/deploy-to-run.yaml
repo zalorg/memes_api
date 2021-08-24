@@ -9,7 +9,6 @@ on:
 jobs:
   main:
     runs-on: ubuntu-latest
-    needs: tests
     name: Build api and deploy to cloud run
 
     steps:
