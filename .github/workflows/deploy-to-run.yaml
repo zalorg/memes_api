@@ -1,0 +1,50 @@
+name: Build and deploy to Cloud Run (dev)
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+jobs:
+  build-api-container:
+    runs-on: ubuntu-latest
+    needs: tests
+    name: Build api and deploy to cloud run
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Node.js version
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+      
+    - name: Setup GCP Service Account
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        version: 'latest'
+        service_account_email: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ZAL1000.client_email }}
+        service_account_key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ZAL1000 }}
+        export_default_credentials: true
+
+    - name: Configure Docker
+      run: |
+        gcloud auth configure-docker
+
+    - name: Build
+      run: |
+        docker build --tag gcr.io/zal1000/personal/discord/interactions:$GITHUB_SHA .
+
+    - name: Push
+      run: |
+        docker push gcr.io/zal1000/personal/discord/interactions:$GITHUB_SHA
+
+    - name: Deploy
+      run: |
+        gcloud run deploy personal-discord-interactions \
+        --region us-central1 \
+        --image gcr.io/zal1000/personal/discord/interactions:$GITHUB_SHA \
+        --platform managed \
+        --allow-unauthenticated \
+        --project zal1000

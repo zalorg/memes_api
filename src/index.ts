@@ -16,7 +16,7 @@ app.use(router);
 
 console.log(process.env.PERSONAL_DISCORD_BOT_TOKEN)
 // fetchSubreddits('memes')
-
+console.log('asd')
 app.listen(3000, () => {
     console.log('Memes API listening on port 3000!');
 })
