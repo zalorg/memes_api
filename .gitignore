@@ -77,3 +77,6 @@ typings/
 
 # Production build output
 dist/
+
+# Cache database
+json.sqlite

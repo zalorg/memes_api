@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
-
-export default function (req: Request, res: Response) {
-  res.send('pong')
+import getRandomMeme from '../../functions/getRandomMeme'
+export default async function (req: Request, res: Response) {
+  const meme = await getRandomMeme()
+  res.json(meme)
 }
 export const autoRegister = true

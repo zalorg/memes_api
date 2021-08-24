@@ -3,7 +3,9 @@ import { database } from 'firebase-admin'
 import { MessageEmbed } from 'discord.js'
 import * as discordinteractions from 'discord-interactions'
 import { Meme } from '../types/memes';
-export default function (req: Request, res: Response) {
+import getRandomMeme from '../functions/getRandomMeme';
+import getMeme from '../functions/getMeme'
+export default async function (req: Request, res: Response) {
     const signature = req.get('X-Signature-Ed25519');
     const timestamp = req.get('X-Signature-Timestamp');
     if (!signature || !timestamp) {
@@ -27,56 +29,44 @@ export default function (req: Request, res: Response) {
     if (command === 'meme') {
         console.log(req.body.data.options);
         if (req.body.data.options[0].name === 'get') {
-            const embed = new MessageEmbed()
             const getOptions = req.body.data.options[0];
             if (typeof getOptions.options === 'object') {
                 const id = req.body.data.options[0].options[0].value;
-                return db.ref(`memes/${id}`).once('value', (snapshot) => {
-                    const data: Meme = snapshot.val();
-                    embed.setTitle(snapshot.val().title);
-                    embed.setImage(snapshot.val().image);
-                    embed.setDescription(`[${snapshot.val().subreddit}](https://reddit.com/r/${snapshot.val().subreddit}) \nMeme Id: ${snapshot.val().id}`);
-                    embed.setFooter(`Meme from: u/${snapshot.val().author || 'Unknown'}`);
-                    embed.setColor('#0099ff'); 
+                const data = await getMeme(id);
+                    if (!data) return res.status(200).send({
+                        type: 4,
+                        data: {
+                            content: 'Meme not found!',
+                        },
+                    });
+                    const embed = getEmbed(data); 
                     return res.status(200).send({
                         type: 4,
                         data: {
                             embeds: [ embed.toJSON() ],
                         },
                     });
-                })
             }
-            return db.ref('memes').once('value', (snapshot) => {
-                const rndInt = Math.floor(Math.random() * snapshot.numChildren()) + 1
-                console.log(rndInt);
-                let a: Meme[] = [];
-                let map = new Map(Object.entries(snapshot.val()));
-                map.forEach((value: any, key) => {
-                    a.push({
-                        id: value.id,
-                        image: value.image,
-                        title: value.title,
-                        subreddit: value.subreddit,
-                        author: value.author,
-                    });
-                })
-                console.log(a[rndInt]);
-                if (a[rndInt].title) {
-                    embed.setTitle(a[rndInt].title);
-                }
-                embed.setImage(a[rndInt].image);
-                embed.setDescription(`[${a[rndInt].subreddit}](https://reddit.com/r/${a[rndInt].subreddit}) \nMeme Id: ${a[rndInt].id}`);
-                embed.setFooter(`Meme from: u/${a[rndInt].author || 'Unknown'}`);
-                embed.setColor('#0099ff'); 
+            const randomMeme = await getRandomMeme();
+            const embed = getEmbed(randomMeme); 
                 return res.status(200).send({
                     type: 4,
                     data: {
                         embeds: [ embed.toJSON() ],
                     },
                 });
-            })
         }
     }
+}
+
+function getEmbed (meme: Meme): MessageEmbed {
+    const embed = new MessageEmbed()
+    embed.setTitle(meme.title);
+    embed.setImage(meme.image);
+    embed.setDescription(`[${meme.subreddit}](https://reddit.com/r/${meme.subreddit}) \nMeme Id: ${meme.id}`);
+    embed.setFooter(`Meme from: u/${meme.author || 'Unknown'}`);
+    embed.setColor('#0099ff'); 
+    return embed;
 }
 
 export const autoRegister = true;
