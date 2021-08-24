@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import { database } from 'firebase-admin'
 import { MessageEmbed } from 'discord.js'
 import * as discordinteractions from 'discord-interactions'
 import { Meme } from '../types/memes';
@@ -24,7 +23,6 @@ export default async function (req: Request, res: Response) {
         });
     }
     console.log(req.body.member.user)
-    const db = database();
     const command = req.body.data.name;
     if (command === 'meme') {
         console.log(req.body.data.options);
@@ -48,6 +46,7 @@ export default async function (req: Request, res: Response) {
                     });
             }
             const randomMeme = await getRandomMeme();
+            console.log(randomMeme);
             const embed = getEmbed(randomMeme); 
                 return res.status(200).send({
                     type: 4,

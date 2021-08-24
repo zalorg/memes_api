@@ -1,9 +1,9 @@
-name: Build and deploy to Cloud Run (dev)
+name: Build and deploy to Cloud Run
 
 on:
   push:
     branches:
-      - dev
+      - main
   workflow_dispatch:
 
 jobs:
