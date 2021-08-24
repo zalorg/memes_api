@@ -4,7 +4,7 @@ import { Meme } from '../types/memes';
 export default async function fetchSubreddits(subreddits?: string | string[]): Promise<void> {
     console.log('Fetching subreddits...');
     try {
-        const response = await axios.get('https://www.reddit.com/r/cursedcomments/hot.json?limit=100');
+        const response = await axios.get('https://www.reddit.com/r/me_irl/hot.json?limit=100');
         const json = response.data;
         console.log(`Fetched ${json.data.children.length} posts`);
         let imagePosts = 0;
@@ -20,7 +20,8 @@ export default async function fetchSubreddits(subreddits?: string | string[]): P
                         id,
                         title: post.data.title,
                         image: url,
-
+                        subreddit: post.data.subreddit_name_prefixed,
+                        author: post.data.author,
                     }
                     await saveMemeToRRdb(memeData);
                 }

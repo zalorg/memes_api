@@ -11,10 +11,11 @@ initializeApp({
 
 const app = express();
 
-
+app.use(express.json())
 app.use(router);
 
-// fetchSubreddits()
+console.log(process.env.PERSONAL_DISCORD_BOT_TOKEN)
+// fetchSubreddits('memes')
 
 app.listen(3000, () => {
     console.log('Memes API listening on port 3000!');
