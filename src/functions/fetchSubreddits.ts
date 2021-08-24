@@ -1,7 +1,7 @@
 import { default as axios } from 'axios';
 import saveMemeToRRdb from './saveMemeToRRdb';
 import { Meme } from '../types/memes';
-export default async function fetchSubreddits(): Promise<void> {
+export default async function fetchSubreddits(subreddits?: string | string[]): Promise<void> {
     console.log('Fetching subreddits...');
     try {
         const response = await axios.get('https://www.reddit.com/r/cursedcomments/hot.json?limit=100');
