@@ -4,7 +4,7 @@ import router from './router'
 // import fetchSubreddits from './functions/fetchSubreddits'
 
 initializeApp({
-    credential: process.env.CODESPACES ? credential.cert(JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS!)) : undefined,
+    credential: process.env.CODESPACES ? credential.cert(JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS!)) : credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS!),
     databaseURL: 'https://memes-api-cache.europe-west1.firebasedatabase.app/'
 })
 
