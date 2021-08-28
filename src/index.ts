@@ -4,7 +4,7 @@ import router from './router'
 // import fetchSubreddits from './functions/fetchSubreddits'
 
 initializeApp({
-    credential: process.env.CODESPACES ? credential.cert(JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS!)) : credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS!),
+    credential: getCert(),
     databaseURL: 'https://memes-api-cache.europe-west1.firebasedatabase.app/'
 })
 
@@ -14,6 +14,15 @@ app.use(express.json())
 app.use(router);
 
 // fetchSubreddits('memes')
+
+function getCert(): credential.Credential {
+    try {
+        const cert = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS!)
+        return credential.cert(cert)
+    } catch (error) {}
+    return credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS!)
+}
+
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
     console.log(`Memes API listening on port ${PORT}!`);
